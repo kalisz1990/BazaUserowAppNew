@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,7 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class AddUserAcctivity extends Activity {
+public class AddUserAcctivity extends AppCompatActivity {
 
     private Button           mAddButton;
     private Button           mReturnToMenuButton;
@@ -34,14 +35,13 @@ public class AddUserAcctivity extends Activity {
     private EditText         mEmail;
     private MyDatabaseSQLite myDatabaseSQLite;
 
-    //TODO poprawic wyglad activity, aby nie bylo tyle linear layoutów, dodac scroll View
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_user_acctivity);
 
-        myDatabaseSQLite = new MyDatabaseSQLite(this,1);
+        myDatabaseSQLite    = new MyDatabaseSQLite(this,1);
 
         mPesel              = (EditText) findViewById(R.id.peselId);
         mName               = (EditText) findViewById(R.id.nameId);
@@ -53,20 +53,59 @@ public class AddUserAcctivity extends Activity {
         mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                myDatabaseSQLite.addUser(mPesel.getText().toString(), mName.getText().toString(), mAddress.getText().toString(), mEmail.getText().toString());
-                displayNewUser();
+                isPeselCorrent();
             }
+
         });
 
         mReturnToMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AddUserAcctivity.this, MenuActivity.class);
-                startActivity(intent);
                 finish();
+                startActivity(intent);
             }
         });
     }
+
+    public void isPeselCorrent () {
+        int sum;
+        byte PESEL[] = new byte[11];
+
+
+        if (mPesel.getText().toString().length() != 11) {
+            if (mPesel.getText().toString().length() > 11) {
+                Toast.makeText(AddUserAcctivity.this, "Pesel too long", Toast.LENGTH_SHORT).show();
+            } else if (mPesel.getText().toString().length() < 11) {
+                Toast.makeText(AddUserAcctivity.this, "Pesel too short", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            for (int i = 0; i < 11; i++) {
+                PESEL[i] = Byte.parseByte(mPesel.getText().toString().substring(i, i + 1));
+            }
+            sum = 1 * PESEL[0] +
+                    3 * PESEL[1] +
+                    7 * PESEL[2] +
+                    9 * PESEL[3] +
+                    1 * PESEL[4] +
+                    3 * PESEL[5] +
+                    7 * PESEL[6] +
+                    9 * PESEL[7] +
+                    1 * PESEL[8] +
+                    3 * PESEL[9];
+            sum %= 10;
+            sum = 10 - sum;
+            sum %= 10;
+
+            if (sum != PESEL[10]) {
+                Toast.makeText(AddUserAcctivity.this, "wrong Pesel, check again", Toast.LENGTH_SHORT).show();
+            } else {
+                myDatabaseSQLite.addUser(mPesel.getText().toString(), mName.getText().toString(), mAddress.getText().toString(), mEmail.getText().toString());
+                displayNewUser();
+            }
+        }
+    }
+
 
     public void displayNewUser (){
 
@@ -80,10 +119,9 @@ public class AddUserAcctivity extends Activity {
             builder.append("\nEmail: " + cursor.getString(4));
             builder.append("\n-------------------\n");
         }
-
         createDialogNewUser("New User", builder.toString());
-
     }
+
     public void createDialogNewUser (String title, String message) {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(title)
@@ -100,9 +138,9 @@ public class AddUserAcctivity extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(AddUserAcctivity.this, MenuActivity.class);
-                        startActivity(intent);
                         finish();
-                        Toast.makeText(AddUserAcctivity.this, "wracam do menu", Toast.LENGTH_SHORT).show();
+                        startActivity(intent);
+                        Toast.makeText(AddUserAcctivity.this, "return to menu", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .show();

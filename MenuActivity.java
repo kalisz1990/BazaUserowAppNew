@@ -36,8 +36,6 @@ public class MenuActivity extends Activity {
             public void onClick(View view) {
                 Intent addUserButton = new Intent(MenuActivity.this, AddUserAcctivity.class);
                 startActivity(addUserButton);
-                finish();
-
             }
         });
 
@@ -54,7 +52,6 @@ public class MenuActivity extends Activity {
             @Override
             public void onClick(View v) {
                 createDialogDeleteUser("Delete user", "what user do you want to delete");
-
             }
         });
 
@@ -67,7 +64,6 @@ public class MenuActivity extends Activity {
                 System.exit(0);
             }
         });
-
     }
 
     public void createDialogDeleteUser (String title, String message) {
@@ -83,23 +79,30 @@ public class MenuActivity extends Activity {
                 .setMessage(message)
                 .setCancelable(false)
                 .setIcon(R.mipmap.ic_launcher)
-                .setPositiveButton("delete all database", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        myDatabaseSQLite.deleteAllUsers();
-                        Toast.makeText(MenuActivity.this, "Database Deleted", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton("delete", new DialogInterface.OnClickListener() {
+                .setPositiveButton("delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         myDatabaseSQLite.deleteOneUser(input.getText().toString());
                         Toast.makeText(MenuActivity.this, "User Deleted", Toast.LENGTH_SHORT).show();
                     }
                 })
+                .setNeutralButton("return", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(MenuActivity.this, "wracam do menu", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("delete all database", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        myDatabaseSQLite.deleteAllUsers();
+                        Toast.makeText(MenuActivity.this, "Database Deleted", Toast.LENGTH_SHORT).show();
+                    }
+                })
                 .setView(input)
                 .show();
     }
+
     public void createDialogFindUser (String title, String message) {
 
         final Intent intent = new Intent(MenuActivity.this, DisplayUserAcctivity.class);
@@ -119,6 +122,7 @@ public class MenuActivity extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         intent.putExtra("View", viewOne(input.getText().toString()));
+                        finish();
                         startActivity(intent);
                     }
                 })
@@ -132,12 +136,14 @@ public class MenuActivity extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         intent.putExtra("View", viewAll());
+                        finish();
                         startActivity(intent);
                     }
                 })
                 .setView(input)
                 .show();
     }
+
     public String viewOne(String input) {
         StringBuilder builder = new StringBuilder();
         Cursor cursor = myDatabaseSQLite.getUser(input);
@@ -152,6 +158,7 @@ public class MenuActivity extends Activity {
         }
         return builder.toString();
     }
+
     public String viewAll() {
         StringBuilder builder = new StringBuilder();
         Cursor cursor = myDatabaseSQLite.getAllUsers();

@@ -39,8 +39,9 @@ public class DisplayUserAcctivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayUserAcctivity.this, MenuActivity.class);
-                startActivity(intent);
                 finish();
+                startActivity(intent);
+
             }
         });
     }
