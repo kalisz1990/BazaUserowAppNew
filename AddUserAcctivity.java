@@ -35,6 +35,7 @@ public class AddUserAcctivity extends AppCompatActivity {
     private EditText         mEmail;
     private MyDatabaseSQLite myDatabaseSQLite;
 
+    // TODO jesli pesel jest w bazie to nie dodawaj, wyrzuć komunikat
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
